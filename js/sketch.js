@@ -83,10 +83,36 @@ function setup() {
   updateInfoPanel(); // Initial call to set up info panel
   updateModeIndicator(); // Initialize the mode indicator
 
-  // Setup slider listener
+  // Setup slider listener and scene markers
   const slider = document.getElementById("sceneSlider");
   if (slider) {
     slider.max = storyEvents.length - 1;
+
+    // Remove any existing markers container before adding a new one
+    const existingContainer = document.querySelector(
+      ".slider-markers-container"
+    );
+    if (existingContainer) {
+      existingContainer.remove();
+    }
+
+    // Create markers container
+    const markersContainer = document.createElement("div");
+    markersContainer.className = "slider-markers-container";
+    slider.parentNode.appendChild(markersContainer);
+
+    // Add scene markers with scene numbers
+    storyEvents.forEach((event, index) => {
+      const marker = document.createElement("div");
+      marker.className = "scene-marker";
+      marker.textContent = index + 1; // Scene number
+
+      // Calculate marker position based on index and total
+      const percentage = (index / (storyEvents.length - 1)) * 100;
+      marker.style.left = `${percentage}%`;
+      markersContainer.appendChild(marker);
+    });
+
     slider.addEventListener("input", () => {
       // Permanently set to manual control mode when slider is used
       manualControl = true;
@@ -144,7 +170,7 @@ function draw() {
 
   // Only increment animation time in auto mode
   if (!paused && !manualControl) {
-    animationTime += 0.05; // Increased animation time increment for faster progression
+    animationTime += 0.5; // Significantly increased animation time increment for visible progression
   }
 
   let currentEvent = storyEvents[currentEventIndex];
@@ -178,12 +204,18 @@ function draw() {
   }
   // Only perform automatic progression if not in manual control mode
   else if (!manualControl) {
-    // Use a slower auto-progression rate for better story pacing
-    let newEventIndex = Math.floor(
-      (animationTime * 0.005) % storyEvents.length
-    ); // Much slower progression (was 0.01)
+    // Increased auto-progression rate for clearly visible advancement
+    let newEventIndex = Math.floor((animationTime * 0.02) % storyEvents.length); // Increased from 0.005 to 0.02 for more noticeable progression
+
+    // Check if we're looping back to the beginning
+    const isLoopingBack = currentEventIndex > newEventIndex;
 
     if (newEventIndex !== currentEventIndex) {
+      // Clear any special effects when looping back to beginning
+      if (isLoopingBack) {
+        clearAllSpecialEffects();
+      }
+
       currentEventIndex = newEventIndex;
       currentEvent = storyEvents[currentEventIndex];
 

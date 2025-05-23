@@ -2,6 +2,24 @@
 
 This project is an immersive 3D visualization of _Randamoozham_, M.T. Vasudevan Nair's masterpiece, experienced through the perspective of its central character, Bhima. It aims to capture the essence of the novel by translating its narrative, strategic depth, and emotional complexity into an interactive, symbolic 3D chess game.
 
+## Known Issues and Future Tasks
+
+### Animation and Scene Transition Issues
+
+- **Auto-advancing Animation Issues**: When the animation loops back to the first scene, special effects from previous scenes may persist rather than being properly cleared.
+- **Scene Slider Issues**:
+  - The slider markers need better visibility and consistent appearance regardless of scene transitions
+  - Scene markers placement and styling needs improvement for better usability
+  - Slider position sometimes doesn't properly reflect the current scene in auto-advancing mode
+
+### To-Do Items
+
+- Implement a more robust clearing mechanism for special effects when transitioning between scenes
+- Redesign the slider UI with clearer numbered scene markers
+- Fix animation persistence when looping through scenes
+- Ensure proper synchronization between the slider position and current scene in all modes
+- Consider implementing scene categories or grouping for easier navigation
+
 ## Visualization Concept: The Mahabharata as a Cosmic Chess Game
 
 The 3D scene reimagines the epic events of _Randamoozham_ as a profound and fated chess game. Key characters are represented by symbolic chess pieces on a 3D board, and pivotal story moments unfold as significant board states or animated move sequences. The visualization seeks to highlight the strategic interactions, power dynamics, moral choices, and the overarching sense of destiny that permeates the novel.
