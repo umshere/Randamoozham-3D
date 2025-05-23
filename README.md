@@ -6,19 +6,19 @@ This project is an immersive 3D visualization of _Randamoozham_, M.T. Vasudevan 
 
 ### Animation and Scene Transition Issues
 
-- **Auto-advancing Animation Issues**: When the animation loops back to the first scene, special effects from previous scenes may persist rather than being properly cleared.
-- **Scene Slider Issues**:
-  - The slider markers need better visibility and consistent appearance regardless of scene transitions
-  - Scene markers placement and styling needs improvement for better usability
-  - Slider position sometimes doesn't properly reflect the current scene in auto-advancing mode
+- **Auto-advancing Animation Looping**: When the animation loops back to the first scene, despite the `clearAllSpecialEffects()` function, some visual elements or animation states may persist.
+- **Scene Slider Enhancements Needed**:
+  - Scene markers need better visibility, particularly against dark backgrounds
+  - Scene markers placement could be improved for more precise navigation
+  - The slider position updates properly but could use visual feedback when changing scenes
 
 ### To-Do Items
 
-- Implement a more robust clearing mechanism for special effects when transitioning between scenes
-- Redesign the slider UI with clearer numbered scene markers
-- Fix animation persistence when looping through scenes
-- Ensure proper synchronization between the slider position and current scene in all modes
-- Consider implementing scene categories or grouping for easier navigation
+- Enhance the `clearAllSpecialEffects()` function to be more comprehensive in removing DOM elements and resetting animation states
+- Add a visual highlight or tooltip when hovering over scene markers in the slider
+- Implement a smooth camera transition between scenes for better visual continuity
+- Add an option for users to save or bookmark favorite scenes
+- Consider implementing scene categories (e.g., "Early Life", "War", "Aftermath") for thematic grouping
 
 ## Visualization Concept: The Mahabharata as a Cosmic Chess Game
 
@@ -96,12 +96,17 @@ Built with [p5.js](https://p5js.org/) for 3D rendering and interactivity in the 
 
 The project is organized into the following files and directories:
 
-- `index.html`: The main HTML file.
-- `css/style.css`: CSS styles.
-- `js/sketch.js`: Main p5.js sketch for core logic, setup, drawing, and chess game rendering.
+- `index.html`: The main HTML file that loads the visualization.
+- `css/style.css`: CSS styles for the user interface and layout.
+- `js/sketch.js`: Main p5.js sketch containing core logic, setup, drawing, and chess game rendering.
 - `js/story.js`: Defines `storyEvents` array, containing narrative data, piece positions for each event, and special actions (moves, captures).
-- `js/characters.js`: Defines `characterStyles` (chess piece types, sides, visual properties) and initializes `activePieces` array (current board state).
-- `README.md`: This file.
+- `js/characters.js`: Defines `characterStyles` mapping characters to chess piece types, sides, colors, and visual properties.
+- `js/animations.js`: Contains animation-related functions and effects for special scenes.
+- `js/story_backup.js` and `js/story_new.js`: Backup and alternative versions of story data for development.
+- `assets/fonts/OpenSans-Regular.ttf`: Font file used for text rendering in the visualization.
+- `README.md`: This documentation file.
+- `LICENSE`: Project license information.
+- `randamoozham_3d_ARCHIVE.html`: Archived version of an earlier single-file implementation.
 
 ## How to Run
 
@@ -116,7 +121,7 @@ The project is organized into the following files and directories:
 - [x] Update `README.md` with new concept, scene breakdown, and roadmap.
 - [x] **`js/characters.js`:**
   - Redefine `characterStyles` for chess pieces (e.g., `{ pieceType: 'ROOK', side: 'PANDAVA', modelKey: 'rookPrimitive', color: [r,g,b], baseSize: 50 }`). (Completed, `baseSize` added as an example, actual sizes might vary per piece type).
-  - Rename `characterOrbs` array to `activePieces` (or similar) globally; this will store the current state of all pieces on the board (name, type, side, rank, file, visualState). (Completed, `activePieces` is used in `sketch.js`; `characters.js` still has a lingering `characterOrbs = []` at the end which should be removed).
+  - Rename `characterOrbs` array to `activePieces` (or similar) globally; this will store the current state of all pieces on the board (name, type, side, rank, file, visualState). (Completed, `activePieces` is used in `sketch.js`; any reference to `characterOrbs` has been removed).
 - [x] **`js/story.js`:**
   - Restructure `storyEvents`. Each event will define:
     - `title`, `description`, `focus`, `color`, `intensity`.
@@ -144,41 +149,46 @@ The project is organized into the following files and directories:
     - Position the piece at `piece.current3DPos.x, piece.current3DPos.y + pieceHeightOffset, piece.current3DPos.z` (offset so it sits on top of the board).
   - In `draw()`, iterate through `activePieces` and call `drawChessPiece()` for each non-captured piece.
   - Adapt Bhima's pulsing visual cue (the central sphere) to his specific chess piece if desired, or remove the generic pulsing sphere.
-- [ ] **`js/sketch.js` - Camera & Interaction:**
+- [x] **`js/sketch.js` - Camera & Interaction:**
   - [x] Set up an initial camera angle for good board visibility. (Completed)
   - [x] Ensure `orbitControl()` provides good views of the board and pieces. (Completed)
   - [x] Add rendering of character names near their 3D pieces. (Completed)
-  - [ ] Refine readability and position of names to ensure clarity.
+  - [x] Refine readability and position of names to ensure clarity. (Completed with text outline effect and dynamic positioning)
 - [x] **`js/characters.js`:**
-  - Ensure `characterStyles` includes a `baseSize` or specific size for each piece type, or that `drawChessPiece` has default sizes.
-  - Remove the unused `let characterOrbs = [];` at the end of the file.
+  - Ensure `characterStyles` includes a `baseSize` or specific size for each piece type, or that `drawChessPiece` has default sizes. (Completed, all character styles now include `baseSize` property)
 - [x] **`js/story.js`:**
-  - Start populating `boardSetup` for the first few `storyEvents` with actual chess positions (e.g., "a1", "h8").
-  - Update `specialActions` to use consistent naming for piece identifiers (e.g., `pieceName: "Bhima"` or `targetPiece: "Dushasana"`). The current `action.character` in `sketch.js` needs to be reconciled with this.
+  - Start populating `boardSetup` for the first few `storyEvents` with actual chess positions (e.g., "a1", "h8"). (Completed, all events now have properly defined board positions)
+  - Update `specialActions` to use consistent naming for piece identifiers (e.g., `pieceName: "Bhima"` or `targetPiece: "Dushasana"`). (Completed, now using consistent `character` and `target` properties)
 
-### Phase 3: Implementing Event Logic & Animations (IN PROGRESS)
+### Phase 3: Implementing Event Logic & Animations (COMPLETED)
 
-- [ ] **`js/sketch.js`:**
-  - Implement logic for smoothly transitioning piece positions when `currentEventIndex` changes (both automatic and slider-driven). This will involve interpolating positions from the previous event's board state to the new one, or executing defined `specialActions`.
+- [x] **`js/sketch.js`:**
+  - Implement logic for smoothly transitioning piece positions when `currentEventIndex` changes (both automatic and slider-driven). (Completed, using lerp interpolation for smooth movement)
   - Animate `specialActions`:
-    - `move`: Animate piece from current square to `to` square.
-    - `capture`: Animate attacking piece moving, target piece being removed (e.g., fades out, shrinks, or moves off-board).
-  - Refine visual cues for piece states (e.g., "highlighted," "threatened," "captured").
+    - `capture`: Animate target piece being removed with sinking and fading effects. (Completed)
+    - Special animations for different scene types (pulse, tremble, approach, etc.). (Completed)
+  - Refine visual cues for piece states (e.g., "captured" with opacity and position changes). (Completed)
 
-### Phase 4: Advanced Visuals & Polish
+### Phase 4: Advanced Visuals & Polish (IN PROGRESS)
 
+- [x] Enhanced lighting system with dynamic ambient and directional lighting based on event colors. (Completed)
+- [x] Scene-specific special effects and animations for each story event. (Completed)
+- [x] Improved text rendering with outlines for better readability. (Completed)
 - [ ] (Optional) Explore loading and rendering simple, distinct 3D models for each chess piece type instead of p5.js primitives.
-- [ ] Enhance lighting, and add textures for the board and pieces for a more polished look.
+- [ ] Add textures for the board and pieces for a more polished look.
 - [ ] Consider adding subtle particle effects for significant moves, captures, or special abilities.
 - [ ] Refine UI/UX, including camera behavior for focusing on key interactions.
 
-### Phase 5: Documentation & Finalization
+### Phase 5: Documentation & Finalization (IN PROGRESS)
 
-- [ ] Ensure all new code is well-commented.
-- [ ] Final review and update of `README.md` and all documentation.
-- [ ] Conduct performance testing and optimization.
+- [x] Update `README.md` with comprehensive project overview, structure, and roadmap. (Completed)
+- [x] Document all major functions and data structures in code comments. (Completed)
+- [ ] Add inline documentation for complex animation logic and special effects.
+- [ ] Create a user guide with keyboard shortcuts and interaction tips.
+- [ ] Conduct performance testing and optimization, especially for scene transitions.
+- [ ] Finalize documentation with troubleshooting section and future development possibilities.
 
-## Current Status (May 22, 2025)
+## Current Status (May 23, 2025)
 
 ### Completed
 
@@ -229,31 +239,44 @@ The project is organized into the following files and directories:
 
 1. **Further Visual Refinements**:
 
-   - Add texture mappings to the board and pieces
-   - Enhance the lighting system for more dramatic effects
-   - Consider adding environmental elements or background
+   - Add texture mappings to the board and pieces for a more realistic appearance
+   - Enhance the lighting system with shadows and more sophisticated illumination
+   - Consider adding environmental elements or background scenery
 
 2. **Interaction Enhancements**:
 
-   - Add hover effects or selection capability for pieces
-   - Implement highlighting of important pieces based on the current event
-   - Consider adding optional explanatory tooltips for scene context
+   - Add hover effects or selection capability for pieces when clicked
+   - Implement highlighting of important pieces based on the current event context
+   - Consider adding optional explanatory tooltips for scene context and character information
 
 3. **Animation Improvements**:
 
-   - Add more dynamic animations for special actions
-   - Implement particle effects for important moments
-   - Create smoother transitions between scenes with camera movements
+   - Add more dynamic animations for special actions and scene transitions
+   - Implement particle effects for dramatic moments (battles, magic, divine interventions)
+   - Create smoother camera movements that follow key action during scene transitions
 
 4. **Performance Optimization**:
-   - Review rendering performance for smoother animations
-   - Optimize lighting and shadow calculations
-   - Consider level-of-detail rendering for complex scenes
+   - Review rendering performance for smoother animations on lower-end devices
+   - Optimize lighting and shadow calculations for better frame rates
+   - Consider level-of-detail rendering for complex scenes with many pieces
 
 ## How to Run
 
-1. Ensure all project files are in the proper directory structure.
-2. Start a local web server to serve the files (e.g., `python3 -m http.server 8000`).
-3. Open `http://localhost:8000` in a browser that supports WebGL.
-4. Use the slider to navigate between different story events.
-5. Use mouse to orbit/rotate the view, scroll to zoom, Space to pause/resume, and R to reset the visualization.
+1. Ensure all project files are in the proper directory structure as outlined in the Project Structure section.
+2. Start a local web server to serve the files. You can use one of these methods:
+   - Python: `python3 -m http.server 8000`
+   - Node.js: `npx serve`
+   - VS Code: Use the Live Server extension
+3. Open the appropriate URL in a browser that supports WebGL:
+   - If using Python server: `http://localhost:8000`
+   - If using Node.js serve: `http://localhost:5000` (default port)
+   - If using Live Server: The browser should open automatically
+4. Navigation controls:
+   - Use the mouse to orbit/rotate the view (left-click and drag)
+   - Scroll to zoom in and out
+   - Use the scene slider at the bottom to navigate between story events
+   - Keyboard shortcuts:
+     - **Space Bar:** Pause/resume automatic scene progression
+     - **R Key:** Reset the visualization to the beginning
+     - **M Key:** Switch to manual control mode
+     - **A Key:** Switch to automatic progression mode
