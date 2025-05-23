@@ -101,17 +101,45 @@ function setup() {
     markersContainer.className = "slider-markers-container";
     slider.parentNode.appendChild(markersContainer);
 
-    // Add scene markers with scene numbers
+    // Add scene markers with scene numbers and tooltips
     storyEvents.forEach((event, index) => {
+      // Create marker
       const marker = document.createElement("div");
       marker.className = "scene-marker";
       marker.textContent = index + 1; // Scene number
+      marker.setAttribute("data-index", index);
+
+      // Create tooltip for marker
+      const tooltip = document.createElement("div");
+      tooltip.className = "scene-marker-tooltip";
+      tooltip.textContent = event.title;
+      marker.appendChild(tooltip);
 
       // Calculate marker position based on index and total
       const percentage = (index / (storyEvents.length - 1)) * 100;
       marker.style.left = `${percentage}%`;
       markersContainer.appendChild(marker);
+
+      // Add event listeners
+      marker.addEventListener("mouseenter", () => {
+        tooltip.style.visibility = "visible";
+        tooltip.style.opacity = "1";
+      });
+
+      marker.addEventListener("mouseleave", () => {
+        tooltip.style.visibility = "hidden";
+        tooltip.style.opacity = "0";
+      });
+
+      marker.addEventListener("click", () => {
+        slider.value = index;
+        // Trigger the input event to update the scene
+        slider.dispatchEvent(new Event("input"));
+      });
     });
+
+    // Set initial active marker
+    updateActiveMarker();
 
     slider.addEventListener("input", () => {
       // Permanently set to manual control mode when slider is used
@@ -122,6 +150,8 @@ function setup() {
         currentEventIndex = sliderValue;
         updateInfoPanel();
         setupBoardForEvent();
+        // Update the active marker
+        updateActiveMarker();
 
         // Process special actions for the new event selected by slider
         const currentEvent = storyEvents[currentEventIndex];
@@ -227,6 +257,7 @@ function draw() {
 
       updateInfoPanel();
       setupBoardForEvent(); // Was updateActiveCharacterOrbs
+      updateActiveMarker(); // Update active marker for auto progression
 
       if (currentEvent.specialActions) {
         currentEvent.specialActions.forEach((action) => {
@@ -1708,4 +1739,37 @@ function createBloodEffects(position) {
     bloodEffect.style.animationDelay = `${random(0, 1)}s`;
     bloodContainer.appendChild(bloodEffect);
   }
+}
+
+// Function to update the active marker styling
+function updateActiveMarker() {
+  const markers = document.querySelectorAll(".scene-marker");
+  markers.forEach((marker) => {
+    const markerIndex = parseInt(marker.getAttribute("data-index"));
+    if (markerIndex === currentEventIndex) {
+      marker.classList.add("active");
+
+      // Update tooltip to show current scene title
+      const tooltip = marker.querySelector(".scene-marker-tooltip");
+      if (tooltip && storyEvents[currentEventIndex]) {
+        tooltip.textContent = storyEvents[currentEventIndex].title;
+      }
+
+      // Briefly show tooltip for the active marker to emphasize current scene
+      if (tooltip) {
+        tooltip.style.visibility = "visible";
+        tooltip.style.opacity = "1";
+
+        // Hide tooltip after 1.5 seconds
+        setTimeout(() => {
+          if (!marker.matches(":hover")) {
+            tooltip.style.visibility = "hidden";
+            tooltip.style.opacity = "0";
+          }
+        }, 1500);
+      }
+    } else {
+      marker.classList.remove("active");
+    }
+  });
 }
