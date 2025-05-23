@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Randamoozham - 3D Journey</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  </head>
+  <body>
+    <div class="info-panel" id="infoPanel">
+      <div class="chapter-title" id="chapterTitle">The Beginning</div>
+      <div id="eventDescription">
+        Bhima's perspective on the Mahabharata unfolds...
+      </div>
+      <div
+        style="margin-top: 10px; font-size: 0.9em; color: #aaa"
+        id="characterFocus"
+      ></div>
+    </div>
+
+    <div id="modeIndicator" class="mode-indicator mode-auto">
+      AUTO ADVANCING
+    </div>
+
+    <div class="controls">
+      <div>Use mouse to rotate • Scroll to zoom</div>
+      <div>
+        Space: Pause/Resume • R: Reset view • M: Manual mode • A: Auto mode
+      </div>
+      <div>Use slider for direct scene selection (stays on selected scene)</div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="slider-container">
+      <label for="sceneSlider">Event:</label>
+      <input
+        type="range"
+        min="0"
+        max="10"
+        value="0"
+        class="slider"
+        id="sceneSlider"
+      />
+    </div>
+
+    <script src="js/story.js"></script>
+    <script src="js/characters.js"></script>
+    <script src="js/sketch.js"></script>
+    <script src="js/animations.js"></script>
+  </body>
+</html>
